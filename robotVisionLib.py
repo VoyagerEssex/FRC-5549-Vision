@@ -28,13 +28,13 @@ class RobotVision(object):
         Returns:
             A numpy.ndarray that has been blurred.
         """
-        if(type is BlurType.Box_Blur):
+        if(type is BlurType.BOX_BLUR):
             ksize = int(2 * round(radius) + 1)
             return cv2.blur(src, (ksize, ksize))
-        elif(type is BlurType.Gaussian_Blur):
+        elif(type is BlurType.GAUSSIAN_BLUR):
             ksize = int(6 * round(radius) + 1)
             return cv2.GaussianBlur(src, (ksize, ksize), round(radius))
-        elif(type is BlurType.Median_Filter):
+        elif(type is BlurType.MEDIAN_FILTER):
             ksize = int(2 * round(radius) + 1)
             return cv2.medianBlur(src, ksize)
         else:
@@ -142,7 +142,7 @@ class RobotVision(object):
             M = cv2.moments(c)
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])
-            output.append(cX, cY)
+            output.append([cX, cY])
 
         return output
 
@@ -152,12 +152,12 @@ class RobotVision(object):
         Args:
             input_contours: A list of numpy.ndarray that each represent a contour.
         Returns:
-            A coordinate X and Y (From top-left), dimensions width and height for each contour.
+            A list of coordinates X and Y (From top-left), dimensions width and height for each contour.
         """
         output = []
         for c in input_contours:
             x, y, w, h = cv2.boundingRect(c)
-            output.append(x, y, w, h)
+            output.append([x, y, w, h])
 
         return output
 
