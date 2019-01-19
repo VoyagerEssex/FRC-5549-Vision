@@ -16,12 +16,10 @@ class CamLib(object):
         Returns:
             A VideoCapture object.
         """
-        camSrc = 0
 
         if platform is 1:
 
             try:
-                global camSrc
                 camSrc = cv2.VideoCapture("/dev/video1")
 
             except:
@@ -30,7 +28,6 @@ class CamLib(object):
         elif platform is 2:
 
             try:
-                global camSrc
                 camSrc = cv2.VideoCapture(0)
 
             except:
@@ -39,7 +36,6 @@ class CamLib(object):
         elif platform is 3:
 
             try:
-                global camSrc
                 camSrc = cv2.VideoCapture(
                     "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)640, height=(int)480, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink")
 
@@ -49,7 +45,6 @@ class CamLib(object):
         else:
 
             try:
-                global camSrc
                 camSrc = cv2.VideoCapture(platform)
 
             except:
@@ -69,13 +64,15 @@ class CamLib(object):
         Returns:
             A video feed from the VideoCapture in a new window.
         """
-        keyexit = kwargs.get('keyExit', False)
-
-        if keyexit is type(bool) and keyexit is True:
-            keyexit = ord('q')
+        keyexit = kwargs.get('keyexit', False)
 
         if type(videosrc) is not cv2.VideoCapture:
             raise ("Error, object provided is not cv2.VideoCapture object")
+
+        if keyexit is True:
+            keyexit = 'q'
+
+        print(keyexit)
 
         windowName = "cv2WindowDisplay"
         cv2.namedWindow(windowName, cv2.WINDOW_NORMAL)
@@ -88,8 +85,9 @@ class CamLib(object):
                 break
             ret, frame = videosrc.read()
             cv2.imshow(windowName, frame)
-            if cv2.waitKey(10) & 0xFF is ord(keyexit) and keyexit is True:
-                break
+            if keyexit is not False:
+                if cv2.waitKey(10) & 0xFF is ord(keyexit):
+                    break
 
             cv2.waitKey(10)
 
