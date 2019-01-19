@@ -2,9 +2,7 @@ import numpy as np
 import cv2
 
 
-
 class RobotVision(object):
-
     class BlurType:
         BOX_BLUR = 1
         GAUSSIAN_BLUR = 2
@@ -33,13 +31,13 @@ class RobotVision(object):
         Returns:
             A numpy.ndarray that has been blurred.
         """
-        if(method is 1):
+        if (method is 1):
             ksize = int(2 * round(radius) + 1)
             return cv2.blur(src, (ksize, ksize))
-        elif(method is 2):
+        elif (method is 2):
             ksize = int(6 * round(radius) + 1)
             return cv2.GaussianBlur(src, (ksize, ksize), round(radius))
-        elif(method is 3):
+        elif (method is 3):
             ksize = int(2 * round(radius) + 1)
             return cv2.medianBlur(src, ksize)
         else:
@@ -57,7 +55,7 @@ class RobotVision(object):
             A black and white numpy.ndarray.
         """
         out = cv2.cvtColor(input, cv2.COLOR_BGR2HSV)
-        return cv2.inRange(out, (hue[0], sat[0], val[0]),  (hue[1], sat[1], val[1]))
+        return cv2.inRange(out, (hue[0], sat[0], val[0]), (hue[1], sat[1], val[1]))
 
     @staticmethod
     def find_contours(input, external_only):
@@ -68,12 +66,12 @@ class RobotVision(object):
         Return:
             A list of numpy.ndarray where each one represents a contour.
         """
-        if(external_only):
+        if (external_only):
             mode = cv2.RETR_EXTERNAL
         else:
             mode = cv2.RETR_LIST
         method = cv2.CHAIN_APPROX_SIMPLE
-        im2, contours, hierarchy =cv2.findContours(input, mode=mode, method=method)
+        im2, contours, hierarchy = cv2.findContours(input, mode=mode, method=method)
         return contours
 
     @staticmethod
@@ -99,7 +97,7 @@ class RobotVision(object):
         """
         output = []
         for contour in input_contours:
-            x,y,w,h = cv2.boundingRect(contour)
+            x, y, w, h = cv2.boundingRect(contour)
             if (w < min_width or w > max_width):
                 continue
             if (h < min_height or h > max_height):

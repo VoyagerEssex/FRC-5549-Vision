@@ -1,8 +1,8 @@
 import threading
 from networktables import NetworkTables
 
-class ConnectTable(object):
 
+class ConnectTable(object):
     """
     Class facilitating connectivity to a Network Table
 
