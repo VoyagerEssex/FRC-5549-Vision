@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import time
 
 
 class CamLib(object):
@@ -53,14 +54,15 @@ class CamLib(object):
         return camSrc
 
     @staticmethod
-    def cv_display_source(videosrc, width, height, title, **kwargs):
+    def cv_display_source(videosrc, width, height, title, isvideo, **kwargs):
         """Displays a cv2.VideoCapture to a window.
         Args:
             videosrc: A VideoCapture object.
             width: Width of video.
             height: Height of video.
             title: Title of window.
-            kwarg - keyExit: Value ID of keyboard key. If this value is True then the default key will be 'q'.
+            isvideo: A boolean representing whether the feed from the source is a video or a live feed.
+            kwarg - keyexit: Value ID of keyboard key. If this value is True then the default key will be 'q'.
         Returns:
             A video feed from the VideoCapture in a new window.
         """
@@ -72,7 +74,10 @@ class CamLib(object):
         if keyexit is True:
             keyexit = 'q'
 
-        print(keyexit)
+        if isvideo is True:
+            fps = int(videosrc.get(cv2.CAP_PROP_FPS)) * 10
+        else:
+            fps = 10
 
         windowName = "cv2WindowDisplay"
         cv2.namedWindow(windowName, cv2.WINDOW_NORMAL)
@@ -86,10 +91,10 @@ class CamLib(object):
             ret, frame = videosrc.read()
             cv2.imshow(windowName, frame)
             if keyexit is not False:
-                if cv2.waitKey(10) & 0xFF is ord(keyexit):
+                if cv2.waitKey(100) & 0xFF is ord(keyexit):
                     break
 
-            cv2.waitKey(10)
+            cv2.waitKey(fps)
 
     @staticmethod
     def cv_write_video_stream(videosrc, width, height, videoname, keyexit):
