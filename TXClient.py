@@ -1,4 +1,6 @@
-from vislib5549 import camlib as cl, nettable as nt, robotvisionlib as rbvl
+from basicvislib5549 import camlib as cl, robotvisionlib as rbvl
+
+from ntlib import nettable as nt
 
 import numpy as np
 import networktables as NetworkTables
