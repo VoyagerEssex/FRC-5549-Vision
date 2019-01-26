@@ -165,11 +165,12 @@ class RobotVision(object):
         return output
 
     @staticmethod
-    def meanshift_cv(input, hsv_threshold_min, hsv_threshold_max, center, **kwargs):
+    def meanshift_cv(input, hue, sat, val, center, **kwargs):
         """
         :param input: Input video source.
-        :param hsv_threshold_min: Input array for minimum range of hsv values.
-        :param hsv_threshold_max: Input array for maximum range of hsv values.
+        :param hue: Input array for min-max hue.
+        :param sat: Input array for min-max sat.
+        :param val: Input array for min-max val.
         :param center: Boolean to enable centering of the frame.
         :param kwargs: For setting dimensions of the meanshift frame.
             fx: X position for the frame.
@@ -187,14 +188,14 @@ class RobotVision(object):
         fheight = kwargs.get("fheight", frame.shape[0])
 
         if center is True:
-            fx = (frame.shape[1]/2)-(fwidth/2)
-            fy = (frame.shape[0]/2)-(fheight/2)
+            fx = int((frame.shape[1]/2)-(fwidth/2))
+            fy = int((frame.shape[0]/2)-(fheight/2))
 
         track_window = (fx, fy, fwidth, fheight)
 
         roi = frame[fy:fy+fheight, fx:fx+fwidth]
         out = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(out, hsv_threshold_min, hsv_threshold_max)
+        mask = cv2.inRange(out, (hue[0], sat[0], val[0]), (hue[1], sat[1], val[1]))
         roi_hist = cv2.calcHist([out], [0], mask, [180], [0, 180])
         cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
 
@@ -212,11 +213,12 @@ class RobotVision(object):
         return (x, y, w, h), ((w/2)+x, (h/2)+y)
 
     @staticmethod
-    def camshift_cv(input, hsv_threshold_min, hsv_threshold_max, center, **kwargs):
+    def camshift_cv(input, hue, sat, val, center, **kwargs):
         """
         :param input: Input video source.
-        :param hsv_threshold_min: Input array for minimum range of hsv values.
-        :param hsv_threshold_max: Input array for maximum range of hsv values.
+        :param hue: Input array for min-max hue.
+        :param sat: Input array for min-max sat.
+        :param val: Input array for min-max val.
         :param center: Boolean to enable centering of the frame.
         :param kwargs: For setting dimensions of the meanshift frame.
             fx: X position for the frame.
@@ -234,14 +236,14 @@ class RobotVision(object):
         fheight = kwargs.get("fheight", frame.shape[0])
 
         if center is True:
-            fx = (frame.shape[1] / 2) - (fwidth / 2)
-            fy = (frame.shape[0] / 2) - (fheight / 2)
+            fx = int((frame.shape[1] / 2) - (fwidth / 2))
+            fy = int((frame.shape[0] / 2) - (fheight / 2))
 
         track_window = (fx, fy, fwidth, fheight)
 
         roi = frame[fy:fy + fheight, fx:fx + fwidth]
         out = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
-        mask = cv2.inRange(out, hsv_threshold_min, hsv_threshold_max)
+        mask = cv2.inRange(out, (hue[0], sat[0], val[0]), (hue[1], sat[1], val[1]))
         roi_hist = cv2.calcHist([out], [0], mask, [180], [0, 180])
         cv2.normalize(roi_hist, roi_hist, 0, 255, cv2.NORM_MINMAX)
 
@@ -256,11 +258,11 @@ class RobotVision(object):
             # give points
             pts = cv2.boxPoints(ret)
             pts = np.int0(pts)
-            max_x = pts[0][1]
-            min_x = pts[0][1]
+            max_x = pts[0][0]
+            min_x = pts[0][0]
 
-            max_y = pts[0][2]
-            min_y = pts[0][2]
+            max_y = pts[0][1]
+            min_y = pts[0][1]
 
             for p in range(1, pts.shape[0]):
                 if max_x < pts[p][0]:
