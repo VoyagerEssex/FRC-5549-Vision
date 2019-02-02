@@ -1,5 +1,5 @@
 import threading
-from networktables import NetworkTables
+import networktables as NetworkTables
 
 
 class ConnectTable(object):
@@ -44,4 +44,4 @@ class ConnectTable(object):
 
         print("Connected!")
 
-        self.Table = NetworkTables.getTable(tableName)
+        self.table = NetworkTables.getTable(tableName)
