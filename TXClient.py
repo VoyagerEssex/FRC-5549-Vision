@@ -21,6 +21,15 @@ class TXClient(object):
             self.vis_init()
             self.isReset = False
 
+            while self.Table.Connected:
+                self.Table.table.putBoolean("tableExists", True)
+
+                if self.Table.table.getNumber("Mode", -1) is 0:
+                    self.test()
+
+                elif self.Table.table.getNumber("Mode", -1) is 1:
+                    self.run()
+
     def vis_init(self):
 
         self.source = bvl.CamLib.cv_video_source('/dev/video1')
@@ -51,26 +60,20 @@ class TXClient(object):
 
         """Single run only. Recommended for flexibility on termination."""
 
-        if self.Table.Connected:
-            self.Table.table.putBoolean("tableExists", True)
+        if self.Table.table.getBoolean("Enabled", False) is True:
+            self.track_window, self.angle = src.Src.vision_assistance(self.source, self.track_window, self.roi_hist)
+            self.isReset = False
 
-            if self.Table.table.getBoolean("VisionAssistanceEnabled", False) is True:
-                self.track_window, self.angle = src.Src.vision_assistance(self.source, self.track_window, self.roi_hist)
-                self.isReset = False
+            self.Table.table.putNumber("angle", self.angle)
 
-                self.Table.table.putNumber("Angle", self.angle)
-
-            elif self.isReset is False and self.Table.table.getBoolean("VisionAssistanceEnabled", False) is False:
-                self.vis_reset()
-                self.isReset = True
+        elif self.isReset is False and self.Table.table.getBoolean("Enabled", False) is False:
+            self.vis_reset()
+            self.isReset = True
 
     def test(self):
 
         """Test for connection and enabling"""
-
-        if self.Table.Connected:
-            self.Table.table.putBoolean("tableExists", True)
-
+        if self.Table.table.getBoolean("Enabled", False) is True:
             if self.Table.table.getNumber("Number", 0) is 1:
                 self.Table.table.putNumber("Number", 0)
 
@@ -88,6 +91,3 @@ class TXClient(object):
 
 if __name__ == '__main__':
     TXC = TXClient()
-
-    while True:
-        TXC.run()
