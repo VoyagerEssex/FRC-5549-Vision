@@ -1,5 +1,5 @@
 import threading
-import networktables as NetworkTables
+from networktables import NetworkTables
 
 
 class ConnectTable(object):
@@ -39,8 +39,8 @@ class ConnectTable(object):
             print("Waiting")
             if not notified[0]:
                 cond.wait()
-            else:
-                self.Connected = True
+
+        self.Connected = True
 
         print("Connected!")
 
