@@ -31,11 +31,16 @@ class TXClient(object):
 
     def vis_init(self):
 
-        self.source = bvl.CamLib.cv_video_source('/dev/video1')
+        self.lsource = bvl.CamLib.cv_video_source('/dev/video1')
+        self.rsource = bvl.CamLib.cv_video_source('/dev/video2')
 
-        self.avg_centers = []
-        self.all_centers = []
-        self.contour_dimensions = []
+        self.lavg_centers = []
+        self.lall_centers = []
+        self.lcontour_dimensions = []
+        
+        self.ravg_centers = []
+        self.rall_centers = []
+        self.rcontour_dimensions = []
 
     def vis_reset(self):
 
@@ -48,14 +53,17 @@ class TXClient(object):
         """Single run only. Recommended for flexibility on termination."""
 
         if self.Table.table.getBoolean("Enabled", False) is True:
-            self.avg_centers, self.all_centers, self.contour_dimensions = src.Src.vision_assistance_contour(self.source)
+            self.avg_centers, self.all_centers, self.contour_dimensions = src.Src.vision_assistance_contour(self.lsource)
+            self.avg_centers, self.all_centers, self.contour_dimensions = src.Src.vision_assistance_contour(self.rsource)
             self.isReset = False
 
-            self.Table.table.putNumberArray("contour centers", self.avg_centers)
-
-            self.Table.table.putNumberArray("all visible contour centers", self.all_centers)
-
-            self.Table.table.putNumberArray("all contour dimensions", self.contour_dimensions)
+            self.Table.table.putNumberArray("left camera contour centers", self.lavg_centers)
+            self.Table.table.putNumberArray("left camera visible contour centers", self.lall_centers)
+            self.Table.table.putNumberArray("left camera contour dimensions", self.lcontour_dimensions)
+            
+            self.Table.table.putNumberArray("right camera contour centers", self.ravg_centers)
+            self.Table.table.putNumberArray("right camera visible contour centers", self.rall_centers)
+            self.Table.table.putNumberArray("right camera contour dimensions", self.rcontour_dimensions)
 
         elif self.isReset is False and self.Table.table.getBoolean("Enabled", False) is False:
             self.vis_reset()
