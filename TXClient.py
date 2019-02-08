@@ -16,17 +16,17 @@ class TXClient(object):
 
     def __init__(self):
 
-        self.Table = ntlib.ConnectTable()
+        self.Table = ntlib.ConnectTable().table
         self.vis_init()
         self.isReset = False
 
         while self.Table.Connected:
-            self.Table.table.putBoolean("tableExists", True)
+            self.Table.putBoolean("tableExists", True)
 
-            if self.Table.table.getNumber("Mode", -1) is 0:
+            if self.Table.getNumber("Mode", -1) is 0:
                 self.test()
 
-            elif self.Table.table.getNumber("Mode", -1) is 1:
+            elif self.Table.getNumber("Mode", -1) is 1:
                 self.run()
 
     def vis_init(self):
@@ -47,26 +47,26 @@ class TXClient(object):
 
         """Single run only. Recommended for flexibility on termination."""
 
-        if self.Table.table.getBoolean("Enabled", False) is True:
+        if self.Table.getBoolean("Enabled", False) is True:
             self.avg_centers, self.all_centers, self.contour_dimensions = src.Src.vision_assistance_contour(self.source)
             self.isReset = False
 
-            self.Table.table.putNumberArray("contour centers", self.avg_centers)
+            self.Table.putNumberArray("contour centers", self.avg_centers)
 
-            self.Table.table.putNumberArray("all visible contour centers", self.all_centers)
+            self.Table.putNumberArray("all visible contour centers", self.all_centers)
 
-            self.Table.table.putNumberArray("all contour dimensions", self.contour_dimensions)
+            self.Table.putNumberArray("all contour dimensions", self.contour_dimensions)
 
-        elif self.isReset is False and self.Table.table.getBoolean("Enabled", False) is False:
+        elif self.isReset is False and self.Table.getBoolean("Enabled", False) is False:
             self.vis_reset()
             self.isReset = True
 
     def test(self):
 
         """Test for connection and enabling"""
-        if self.Table.table.getBoolean("Enabled", False) is True:
-            if self.Table.table.getNumber("Number", 0) is 1:
-                self.Table.table.putNumber("Number", 0)
+        if self.Table.getBoolean("Enabled", False) is True:
+            if self.Table.getNumber("Number", 0) is 1:
+                self.Table.putNumber("Number", 0)
 
     '''def looprun(self):
 
