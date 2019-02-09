@@ -1,6 +1,7 @@
 import basicvislib5549 as bvl
 import ntlib
 import src
+import math
 
 import numpy as np
 
@@ -52,11 +53,15 @@ class TXClient(object):
             self.avg_centers, self.all_centers, self.contour_dimensions = src.Src.vision_assistance_contour(source)
             self.isReset = False
 
+            cwidth = abs(self.contour_dimensions[1, 0] - (self.contour_dimensions[0, 0] + self.contour_dimensions[0, 2]))
+            centerdist = (source.shape[1]-self.avg_centers)
+            rundist = (centerdist*14) / cwidth
+            offset_direction = math.degrees(math.atan(rundist/centerdist))
+
             self.Table.table.putNumberArray("contour centers", self.avg_centers)
-
             self.Table.table.putNumberArray("all visible contour centers", self.all_centers)
-
             self.Table.table.putNumberArray("all contour dimensions", self.contour_dimensions)
+            self.Table.table.putNumber("Direction", offset_direction)
 
         elif self.isReset is False and self.Table.table.getBoolean("Enabled", False) is False:
             self.vis_reset()
