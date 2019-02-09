@@ -18,7 +18,6 @@ class TXClient(object):
     def __init__(self):
 
         self.Table = ntlib.ConnectTable()
-        self.vis_init()
         self.isReset = False
 
         while self.Table.Connected:
@@ -29,20 +28,56 @@ class TXClient(object):
 
             elif self.Table.table.getNumber("Mode", -1) is 1:
                 self.run()
+                self.vissource = bvl.CamLib.cv_video_source('/dev/video1')
 
-    def vis_init(self):
+                self.avg_centers = []
+                self.all_centers = []
+                self.contour_dimensions = []
 
-        self.vissource = bvl.CamLib.cv_video_source('/dev/video1')
+            elif self.Table.table.getNumber("Mode", -1) is 2:
+                self.dualrun()
+                self.lvissource = bvl.CamLib.cv_video_source('/dev/video1')
+                self.rvissource = bvl.CamLib.cv_video_source('/dev/video2')
 
-        self.avg_centers = []
-        self.all_centers = []
-        self.contour_dimensions = []
+                self.lavg_centers = []
+                self.lall_centers = []
+                self.lcontour_dimensions = []
+                self.ravg_centers = []
+                self.rall_centers = []
+                self.rcontour_dimensions = []
+
 
     def vis_reset(self):
 
         """Method to reset variables after finishing loop and be ready for enabling. Reset code goes here."""
 
         return
+
+    def dualrun(self):
+
+        if self.Table.table.getBoolean("Enabled", False) is True:
+            lret, lsource = self.lvissource.read()
+            rret, rsource = self.rvissource.read()
+            self.lavg_centers, self.lall_centers, self.lcontour_dimensions = src.Src.vision_assistance_contour(lsource)
+            self.ravg_centers, self.rall_centers, self.rcontour_dimensions = src.Src.vision_assistance_contour(rsource)
+            self.isReset = False
+
+            lcwidth = abs(self.lcontour_dimensions[1, 0] - (self.lcontour_dimensions[0, 0] + self.lcontour_dimensions[0, 2]))
+            lcenterdist = (lsource.shape[1]-self.avg_centers)
+            lrundist = (lcenterdist*14) / lcwidth
+            loffset_direction = math.degrees(math.atan(lrundist/lcenterdist))
+
+            rcwidth = abs(self.rcontour_dimensions[1, 0] - (self.rcontour_dimensions[0, 0] + self.rcontour_dimensions[0, 2]))
+            rcenterdist = (rsource.shape[1] - self.avg_centers)
+            rrundist = (rcenterdist * 14) / rcwidth
+            roffset_direction = math.degrees(math.atan(rrundist / rcenterdist))
+
+            self.Table.table.putNumber("Left Camera Direction", loffset_direction)
+            self.Table.table.putNumber("Left Camera Direction", roffset_direction)
+
+        elif self.isReset is False and self.Table.table.getBoolean("Enabled", False) is False:
+            self.vis_reset()
+            self.isReset = True
 
     def run(self):
 
