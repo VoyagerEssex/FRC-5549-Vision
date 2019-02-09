@@ -167,26 +167,24 @@ class RobotVision(object):
     @staticmethod
     def meanshift_cv(input, window, roi_hist):
         """
-        :param input: Input video source.
+        :param input: Input frame.
         :param hue: Input array for min-max hue.
         :param sat: Input array for min-max sat.
         :param val: Input array for min-max val.
         :param window: window for meanShift to locate in.
         :return: Bounding box (and new window), center of the evaluated meanshift.
         """
-        ret, frame = input.read()
 
         track_window = window
 
         term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
 
-        if ret == True:
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            dst = cv2.calcBackProject([hsv], [0], roi_hist, [0, 180], 1)
-            # apply meanshift to get the new location
-            ret, track_window = cv2.meanShift(dst, track_window, term_crit)
-            # give dimensions
-            x, y, w, h = track_window
+        hsv = cv2.cvtColor(input, cv2.COLOR_BGR2HSV)
+        dst = cv2.calcBackProject([hsv], [0], roi_hist, [0, 180], 1)
+        # apply meanshift to get the new location
+        ret, track_window = cv2.meanShift(dst, track_window, term_crit)
+        # give dimensions
+        x, y, w, h = track_window
 
         return (x, y, w, h), ((w/2)+x, (h/2)+y)
 
@@ -194,28 +192,38 @@ class RobotVision(object):
     def camshift_cv(input, window, roi_hist):
         """
         :param input: Input video source.
-        :param hue: Input array for min-max hue.
-        :param sat: Input array for min-max sat.
-        :param val: Input array for min-max val.
         :param window: window for CamShift to locate in.
+        :param roi_hist: Input mask for camshift.
         :return: Bounding box (and new window) and points of the evaluated CamShift.
         """
-        ret, frame = input.read()
 
         track_window = window
 
         term_crit = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 1)
 
-        if ret == True:
-            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-            dst = cv2.calcBackProject([hsv], [0], roi_hist, [0, 180], 1)
-            # apply meanshift to get the new location
-            rect, track_window = cv2.CamShift(dst, track_window, term_crit)
-            # give points
-            pts = cv2.boxPoints(rect)
-            pts = np.int0(pts)
-            x, y, w, h = track_window
-        else:
-            pts = False
+        hsv = cv2.cvtColor(input, cv2.COLOR_BGR2HSV)
+        dst = cv2.calcBackProject([hsv], [0], roi_hist, [0, 180], 1)
+        # apply meanshift to get the new location
+        rect, track_window = cv2.CamShift(dst, track_window, term_crit)
+        # give points
+        pts = cv2.boxPoints(rect)
+        pts = np.int0(pts)
+        x, y, w, h = track_window
 
         return (x, y, w, h), pts
+
+    @staticmethod
+    def brightness_contrast(frame, brightness, contrast):
+        """
+        :param frame: Input frame for brightness and contrast
+        :param brightness: Brightness value
+        :param contrast: Contrast value
+        :return: Frame processed by contrast and brightness operations
+        """
+
+        frame = np.int16(frame)
+        frame = frame * (contrast / 127 + 1) - contrast + brightness
+        frame = np.clip(frame, 0, 255)
+        frame = np.uint8(frame)
+
+        return frame

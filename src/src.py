@@ -11,7 +11,9 @@ class Src(object):
 
         source = bvl.RobotVision.blur(source, bvl.RobotVision.BlurType.BOX_BLUR, 5)
 
-        source = bvl.RobotVision.hsv_threshold(source, [64, 88], [89, 255], [0, 255])
+        source = bvl.RobotVision.brightness_contrast(source, -255, 256*1.4-1)
+
+        source = bvl.RobotVision.hsv_threshold(source, [80, 100], [89, 255], [30, 255])
 
         contours = bvl.RobotVision.find_contours(source, False)
 

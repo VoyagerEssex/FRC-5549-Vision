@@ -31,7 +31,7 @@ class TXClient(object):
 
     def vis_init(self):
 
-        self.source = bvl.CamLib.cv_video_source('/dev/video1')
+        self.vissource = bvl.CamLib.cv_video_source('/dev/video1')
 
         self.avg_centers = []
         self.all_centers = []
@@ -48,7 +48,8 @@ class TXClient(object):
         """Single run only. Recommended for flexibility on termination."""
 
         if self.Table.table.getBoolean("Enabled", False) is True:
-            self.avg_centers, self.all_centers, self.contour_dimensions = src.Src.vision_assistance_contour(self.source)
+            ret, source = self.vissource.read()
+            self.avg_centers, self.all_centers, self.contour_dimensions = src.Src.vision_assistance_contour(source)
             self.isReset = False
 
             self.Table.table.putNumberArray("contour centers", self.avg_centers)

@@ -4,9 +4,9 @@ import cv2
 
 class CamLib(object):
     class PlatformType:
-        USB_CAM_LINUX = 1
-        USB_CAM_WIN = 2
-        JETSON_TX2_INT = 3
+        USB_CAM_LINUX = -1
+        USB_CAM_WIN = -2
+        JETSON_TX2_INT = -3
 
     class SourceType:
         CAMERA = 0
@@ -22,7 +22,7 @@ class CamLib(object):
             A VideoCapture object.
         """
 
-        if platform is 1:
+        if platform is -1:
 
             try:
                 camSrc = cv2.VideoCapture("/dev/video1")
@@ -30,7 +30,7 @@ class CamLib(object):
             except:
                 raise ("Error, Video source not found [USB_CAM_LINUX]")
 
-        elif platform is 2:
+        elif platform is -2:
 
             try:
                 camSrc = cv2.VideoCapture(0)
@@ -38,7 +38,7 @@ class CamLib(object):
             except:
                 raise ("Error, Video source not found [USB_CAM_WIN]")
 
-        elif platform is 3:
+        elif platform is -3:
 
             try:
                 camSrc = cv2.VideoCapture(
