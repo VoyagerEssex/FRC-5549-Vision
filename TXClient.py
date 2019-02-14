@@ -1,5 +1,5 @@
 import basicvislib5549 as bvl
-import ntlib
+import comms
 import src
 import math
 
@@ -17,8 +17,9 @@ class TXClient(object):
 
     def __init__(self):
 
-        self.Table = ntlib.ConnectTable()
+        self.Table = comms.ConnectTable()
         self.isReset = False
+        self.vidstream = comms.VideoStream()
 
         while self.Table.Connected:
             self.Table.table.putBoolean("tableExists", True)
@@ -75,6 +76,8 @@ class TXClient(object):
             self.Table.table.putNumber("Left Camera Direction", loffset_direction)
             self.Table.table.putNumber("Left Camera Direction", roffset_direction)
 
+            self.vidstream.putFrame(rsource)
+
         elif self.isReset is False and self.Table.table.getBoolean("Enabled", False) is False:
             self.vis_reset()
             self.isReset = True
@@ -97,6 +100,8 @@ class TXClient(object):
             self.Table.table.putNumberArray("all visible contour centers", self.all_centers)
             self.Table.table.putNumberArray("all contour dimensions", self.contour_dimensions)
             self.Table.table.putNumber("Direction", offset_direction)
+
+            self.vidstream.putFrame(source)
 
         elif self.isReset is False and self.Table.table.getBoolean("Enabled", False) is False:
             self.vis_reset()
