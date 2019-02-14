@@ -1,1 +1,0 @@
-from .nettable import ConnectTable
