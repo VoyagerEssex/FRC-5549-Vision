@@ -1,8 +1,10 @@
 import basicvislib5549 as bvl
 import comms
 import src
+
 import math
 
+import logging
 import numpy as np
 
 '''
@@ -64,19 +66,23 @@ class TXClient(object):
             self.isReset = False
 
             lcwidth = abs(self.lcontour_dimensions[1, 0] - (self.lcontour_dimensions[0, 0] + self.lcontour_dimensions[0, 2]))
-            lcenterdist = (lsource.shape[1]-self.avg_centers)
-            lrundist = (lcenterdist*14) / lcwidth
-            loffset_direction = math.degrees(math.atan(lrundist/lcenterdist))
+            lcenterdist = (lsource.shape[1]-self.lavg_centers)
+            lhypodist = (lcenterdist*14) / lcwidth
+            loffset_direction = math.degrees(math.atan(lhypodist / lcenterdist))
+            lrundist = math.cos(math.radians(-30)) * lhypodist
 
             rcwidth = abs(self.rcontour_dimensions[1, 0] - (self.rcontour_dimensions[0, 0] + self.rcontour_dimensions[0, 2]))
-            rcenterdist = (rsource.shape[1] - self.avg_centers)
-            rrundist = (rcenterdist * 14) / rcwidth
-            roffset_direction = math.degrees(math.atan(rrundist / rcenterdist))
+            rcenterdist = (rsource.shape[1] - self.ravg_centers)
+            rhypodist = (rcenterdist * 14) / rcwidth
+            roffset_direction = math.degrees(math.atan(rhypodist / rcenterdist))
+            rrundist = math.cos(math.radians(-30)) * rhypodist
 
             self.Table.table.putNumber("Left Camera Direction", loffset_direction)
-            self.Table.table.putNumber("Left Camera Direction", roffset_direction)
+            self.Table.table.putNumber("Right Camera Direction", roffset_direction)
+            self.Table.table.putNumber("Left Camera Distance", lrundist)
+            self.Table.table.putNumber("Right Camera Distance", rrundist)
 
-            self.vidstream.putFrame(rsource)
+            self.vidstream.putFrame(lsource)
 
         elif self.isReset is False and self.Table.table.getBoolean("Enabled", False) is False:
             self.vis_reset()
@@ -93,13 +99,15 @@ class TXClient(object):
 
             cwidth = abs(self.contour_dimensions[1, 0] - (self.contour_dimensions[0, 0] + self.contour_dimensions[0, 2]))
             centerdist = (source.shape[1]-self.avg_centers)
-            rundist = (centerdist*14) / cwidth
-            offset_direction = math.degrees(math.atan(rundist/centerdist))
+            hypodist = (centerdist*14) / cwidth
+            offset_direction = math.degrees(math.atan(hypodist/centerdist))
+            rundist = math.cos(math.radians(-30)) * hypodist
 
             self.Table.table.putNumberArray("contour centers", self.avg_centers)
             self.Table.table.putNumberArray("all visible contour centers", self.all_centers)
             self.Table.table.putNumberArray("all contour dimensions", self.contour_dimensions)
             self.Table.table.putNumber("Direction", offset_direction)
+            self.Table.table.putNumber("Camera Distance", rundist)
 
             self.vidstream.putFrame(source)
 
@@ -128,4 +136,7 @@ class TXClient(object):
 
 
 if __name__ == '__main__':
-    TXC = TXClient()
+    try:
+        TXC = TXClient()
+    except:
+        logging.exception("TXClient")
