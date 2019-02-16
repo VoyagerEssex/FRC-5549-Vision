@@ -2,6 +2,11 @@ import cv2
 import numpy
 import cscore
 
+"""
+Class creates a server which streams video to a sink or server. In this case,
+OpenCV frames by calling 'putFrame' in TXClient.
+"""
+
 class VideoStream(object):
 
     def __init__(self):
@@ -15,4 +20,4 @@ class VideoStream(object):
 
     def putFrame(self, cv_frame):
 
-        self.source.putFrame()
+        self.source.putFrame(cv_frame)
