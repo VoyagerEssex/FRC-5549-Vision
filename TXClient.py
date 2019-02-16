@@ -4,7 +4,7 @@ import src
 
 import math
 
-import logging
+import traceback
 import numpy as np
 
 '''
@@ -138,5 +138,7 @@ class TXClient(object):
 if __name__ == '__main__':
     try:
         TXC = TXClient()
-    except:
-        logging.exception("TXClient")
+    except Exception as e:
+        with open('txclientlog.txt', 'w') as f:
+            f.write(str(e))
+            f.write(traceback.format_exc())
