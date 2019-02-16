@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import imutils
 
 
 class RobotVision(object):
@@ -7,6 +8,26 @@ class RobotVision(object):
         BOX_BLUR = 1
         GAUSSIAN_BLUR = 2
         MEDIAN_FILTER = 3
+
+    class FlipMode:
+        HORIZONTAL = 0
+        VERTICAL = 1
+        BOTH = -1
+
+    @staticmethod
+    def rotate_image(input, rotation, flip):
+        """
+        :param input: A numpy.ndarray
+        :param rotation: Degrees of rotation, including 90, -90 degrees and full flipping.
+        :param flip: Mode of flipping.
+        :return: A rotated frame
+        """
+        if flip is not False:
+            input = cv2.flip(input, flip)
+
+        rotated = imutils.rotate(input, rotation)
+
+        return rotated
 
     @staticmethod
     def resize_image(input, width, height, interpolation):
