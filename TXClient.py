@@ -42,12 +42,11 @@ class TXClient(object):
                 except NameError:
                     self.vissource = bvl.CamLib.cv_video_source('/dev/video1')
 
-                else:
-                    self.run()
+                self.run()
 
-                    self.avg_centers = []
-                    self.all_centers = []
-                    self.contour_dimensions = []
+                self.avg_centers = []
+                self.all_centers = []
+                self.contour_dimensions = []
 
             elif self.Table.table.getNumber("Mode", -1) is 2:
                 try:
