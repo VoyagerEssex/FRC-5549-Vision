@@ -17,4 +17,4 @@ class VideoStream:
         VideoStream.Instances += 1
 
     def putFrame(self, cv_frame: np.ndarray):
-        self.source.putFrame(cv_frame)
+        self._source.putFrame(cv_frame)
