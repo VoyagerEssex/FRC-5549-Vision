@@ -1,8 +1,13 @@
 import threading
 from networktables import NetworkTables
 
+"""
+Class to facilitate automatic secure connection to a NetworkTable table host.
+Construct it to make available a networktables table.
+"""
 
-class ConnectTable(object):
+
+class ConnectTable:
     """
     Class facilitating connectivity to a Network Table
 
@@ -18,7 +23,6 @@ class ConnectTable(object):
     """
 
     def __init__(self, **kwargs):
-
         tableName = kwargs.get('tableName', 'SmartDashboard')
         server = kwargs.get('server', '10.55.49.2')
 

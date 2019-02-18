@@ -3,7 +3,7 @@ import cv2
 import imutils
 
 
-class RobotVision(object):
+class RobotVision:
     class BlurType:
         BOX_BLUR = 1
         GAUSSIAN_BLUR = 2
@@ -185,14 +185,13 @@ class RobotVision(object):
 
         return output
 
+    # noinspection PyIncorrectDocstring,PyIncorrectDocstring,PyIncorrectDocstring,PyIncorrectDocstring
     @staticmethod
     def meanshift_cv(input, window, roi_hist):
         """
         :param input: Input frame.
-        :param hue: Input array for min-max hue.
-        :param sat: Input array for min-max sat.
-        :param val: Input array for min-max val.
         :param window: window for meanShift to locate in.
+        :param roi_hist: Input mask for meanshift.
         :return: Bounding box (and new window), center of the evaluated meanshift.
         """
 
@@ -207,7 +206,7 @@ class RobotVision(object):
         # give dimensions
         x, y, w, h = track_window
 
-        return (x, y, w, h), ((w/2)+x, (h/2)+y)
+        return (x, y, w, h), ((w / 2) + x, (h / 2) + y)
 
     @staticmethod
     def camshift_cv(input, window, roi_hist):

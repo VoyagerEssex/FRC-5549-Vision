@@ -1,11 +1,18 @@
 from basicvislib5549 import robotvisionlib as bvl
 import cv2
 import math
+import numpy as np
 
-class Src(object):
+"""
+Pipeline for vision calculation, performs the main brunt of the work on the TX2 including calculating contour
+dimensions, centers, and average center of the contours.
+"""
+
+
+class Src:
 
     @staticmethod
-    def vision_assistance_contour(source):
+    def vision_assistance_contour(source: np.ndarray) -> (tuple, tuple, tuple):
 
         source = bvl.RobotVision.resize_image(source, 280, 210, cv2.INTER_CUBIC)
 
@@ -13,7 +20,7 @@ class Src(object):
 
         source = bvl.RobotVision.brightness_contrast(source, -255, 256*1.4-1)
 
-        source = bvl.RobotVision.hsv_threshold(source, [80, 100], [89, 255], [30, 255])
+        source = bvl.RobotVision.hsv_threshold(source, [80, 100], [140, 255], [100, 255])
 
         contours = bvl.RobotVision.find_contours(source, False)
 
@@ -34,9 +41,8 @@ class Src(object):
 
         return (avgcenx, avgceny), centers, bboxes
 
-
     @staticmethod
-    def vision_assistance_camshift(source, window, roi_hist):
+    def vision_assistance_camshift(source: np.ndarray, window: tuple, roi_hist: tuple) -> (tuple, int):
 
         trackwindow_new, pts = bvl.RobotVision.camshift_cv(source, window, roi_hist)
 
